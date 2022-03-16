@@ -4,6 +4,7 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var cors = require("cors");
+var multer = require("multer");
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/products");
@@ -22,9 +23,33 @@ const corsOpts = {
 app.use(cors(corsOpts));
 app.use(logger("dev"));
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+
+const multerStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "./public");
+  },
+  filename: (req, file, cb) => {
+    const ext = file.mimetype.split("/")[1];
+    cb(null, `images/admin-${file.fieldname}-${Date.now()}.${ext}`);
+  },
+});
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.split("/")[1] === "png") {
+    cb(null, true);
+  } else {
+    cb(new Error("Not a PDF File!!"), false);
+  }
+};
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+
+app.use(upload.any());
 
 app.use("/", indexRouter);
 app.use("/products", usersRouter);

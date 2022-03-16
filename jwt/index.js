@@ -1,24 +1,31 @@
 const jwt = require("jsonwebtoken");
+const { TOKEN_SECRET } = require("../utility");
 function generateAccessToken(username) {
-  console.log(username);
-  return jwt.sign(username, process.env.TOKEN_SECRET, { expiresIn: "1800s" });
+  console.log(TOKEN_SECRET);
+  return jwt.sign(
+    {
+      data: username,
+    },
+    TOKEN_SECRET,
+    { expiresIn: "1h" }
+  );
 }
 
 function authenticateToken(req, res, next) {
-  const authHeader = req.body.token;
+  console.log(req.headers.authorization.split("Bearer "));
+  const authHeader = req.headers.authorization.split("Bearer ")[1];
+  console.log(authHeader);
   const token = authHeader;
 
   if (token == null) return res.sendStatus(401);
-
-  jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {
-    console.log(err);
-
+  console.log(token, TOKEN_SECRET);
+  let userData = jwt.verify(token, TOKEN_SECRET, (err, user) => {
     if (err) return res.sendStatus(403);
 
     req.user = user;
-
-    next();
+    return user.data;
   });
+  return userData;
 }
 
 module.exports = { generateAccessToken, authenticateToken };
