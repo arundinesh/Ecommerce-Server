@@ -1,24 +1,21 @@
 var express = require("express");
+const {
+  getProducts,
+  addProducts,
+  deleteProducts,
+  updateProducts,
+  changestatusProducts,
+} = require("../controller/productController");
 var router = express.Router();
 
 /* GET users listing. */
-router.post("/", function (req, res, next) {
+router.post("/", getProducts);
+router.get("/view/:id", function (req, res, next) {
   res.send("respond with a resource");
 });
-router.post("/viewproduct", function (req, res, next) {
-  res.send("respond with a resource");
-});
-router.get("/cartitem", function (req, res, next) {
-  res.send("respond with a resource");
-});
-router.post("/addcart", function (req, res, next) {
-  res.send("respond with a resource");
-});
-router.delete("/deletecart", function (req, res, next) {
-  res.send("respond with a resource");
-});
-router.put("/updatecart", function (req, res, next) {
-  res.send("respond with a resource");
-});
+router.post("/add", addProducts);
+router.delete("/delete/:id", deleteProducts);
+router.put("/update", updateProducts);
+router.put("/change_status", changestatusProducts);
 
 module.exports = router;

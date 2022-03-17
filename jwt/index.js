@@ -12,15 +12,14 @@ function generateAccessToken(username) {
 }
 
 function authenticateToken(req, res, next) {
-  console.log(req.headers.authorization.split("Bearer "));
-  const authHeader = req.headers.authorization.split("Bearer ")[1];
+  const authHeader = req.headers?.authorization?.split("Bearer ")?.[1];
   console.log(authHeader);
   const token = authHeader;
 
-  if (token == null) return res.sendStatus(401);
+  if (token == null) return null;
   console.log(token, TOKEN_SECRET);
   let userData = jwt.verify(token, TOKEN_SECRET, (err, user) => {
-    if (err) return res.sendStatus(403);
+    if (err) return res.send(403);
 
     req.user = user;
     return user.data;

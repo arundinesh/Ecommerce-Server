@@ -8,6 +8,7 @@ const authSchema = require("../schema");
 
 module.exports.login = function (req, res) {
   let userData = req.body;
+  console.log(req.body);
   let { error } = authSchema.loginSchema.validate(userData);
   if (error?.message)
     return res.status(422).json({
