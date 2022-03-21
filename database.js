@@ -1,11 +1,20 @@
-var mysql = require("mysql");
-var connection = mysql.createConnection({
+// var mysql = require("mysql");
+// var connection = mysql.createConnection({
+//   host: "localhost",
+//   user: "root",
+//   password: "",
+//   database: "Ecommerce",
+// });
+
+// connection.connect();
+
+// module.exports = connection;
+const Sequelize = require("sequelize");
+
+const sequelize = new Sequelize("Ecommerce", "root", "", {
   host: "localhost",
-  user: "root",
-  password: "",
-  database: "Ecommerce",
+  dialect: "mysql",
+  operatorsAliases: false,
 });
 
-connection.connect();
-
-module.exports = connection;
+module.exports = sequelize;

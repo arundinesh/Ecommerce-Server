@@ -5,8 +5,10 @@ const { v4: uuidv4 } = require("uuid");
 var moment = require("moment");
 const { CURRENT_DATETIME } = require("../utility");
 const authSchema = require("../schema");
+const { UserModal } = require("../model");
+const sequelize = require("../database");
 
-module.exports.login = function (req, res) {
+module.exports.login = async function (req, res) {
   let userData = req.body;
   console.log(req.body);
   let { error } = authSchema.loginSchema.validate(userData);
@@ -14,25 +16,34 @@ module.exports.login = function (req, res) {
     return res.status(422).json({
       message: error?.message,
     });
-  connection.query(
-    `SELECT email, password ,type as user_type FROM user WHERE email="${userData.email}"`,
-    function (err, rows, fileds) {
-      if (err) throw err;
-      if (rows.length > 0) {
-        let encryptPass = sha1(userData.password);
-        if (rows[0].password === encryptPass) {
-          const generateToken = jwt.generateAccessToken(rows[0].email);
-          rows[0].token = generateToken;
-          delete rows[0].password;
-          res.json({ msg: "success", data: rows[0] });
-        } else {
-          res.status(404).send({ msg: "Incorrect password!!!" });
-        }
-      } else {
-        res.status(404).send({ msg: "user not found!!" });
-      }
-    }
-  );
+
+  // UserModal.sync();
+  const user = await UserModal.findAll().catch((err) => console.log(err));
+  // const user = await UserModal.create({
+  //   email: userData.email,
+  //   password: "1234567890",
+  // }).catch((err) => console.log(err));
+  console.log(user);
+  res.json({ msg: "success", data: user });
+  // connection.query(
+  //   `SELECT email, password ,type as user_type FROM user WHERE email="${userData.email}"`,
+  //   function (err, rows, fileds) {
+  //     if (err) throw err;
+  //     if (rows.length > 0) {
+  //       let encryptPass = sha1(userData.password);
+  //       if (rows[0].password === encryptPass) {
+  //         const generateToken = jwt.generateAccessToken(rows[0].email);
+  //         rows[0].token = generateToken;
+  //         delete rows[0].password;
+  //         res.json({ msg: "success", data: rows[0] });
+  //       } else {
+  //         res.status(404).send({ msg: "Incorrect password!!!" });
+  //       }
+  //     } else {
+  //       res.status(404).send({ msg: "user not found!!" });
+  //     }
+  //   }
+  // );
 };
 module.exports.signin = function (req, res) {
   let userData = req.body;

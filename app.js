@@ -5,6 +5,7 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var cors = require("cors");
 var multer = require("multer");
+var sequelize = require("sequelize");
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/products");
@@ -50,6 +51,7 @@ const upload = multer({
 });
 
 app.use(upload.any());
+sequelize.sync({ force: true });
 
 app.use("/", indexRouter);
 app.use("/products", usersRouter);
